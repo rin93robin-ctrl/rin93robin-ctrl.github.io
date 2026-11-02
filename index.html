@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RiN凜 的遊戲小屋</title>
+<meta name="description" content="Taiwanese VTuber RiN凜 製作的網頁小遊戲合集，打開瀏覽器就能玩。">
+<meta property="og:title" content="RiN凜 的遊戲小屋">
+<meta property="og:description" content="RiN凜 製作的網頁小遊戲合集，打開瀏覽器就能玩。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0d0a14;--panel:#140f22;--line:#3a2a4a;--soft:#6b5a8a;--text:#f3e9d2;--gold:#ffcf6b;--red:#c0392b;--green:#b6ff3b;--muted:#9a8fb0}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:"DotGothic16","Noto Sans TC","PingFang TC","Microsoft JhengHei",monospace}
+  #sky{position:fixed;inset:0;z-index:-1;width:100%;height:100%;image-rendering:pixelated}
+  .wrap{max-width:980px;margin:0 auto;padding:28px 16px 40px}
+  header{text-align:center;padding:24px 0 10px}
+  .tag{color:var(--green);letter-spacing:6px;font-size:14px}
+  h1{font-size:clamp(30px,6vw,52px);margin:8px 0 6px;color:var(--gold);text-shadow:4px 4px 0 var(--red);letter-spacing:3px;font-weight:normal}
+  .sub{color:#d9c4ef;font-size:clamp(13px,2vw,16px);margin:0}
+  .house{display:block;margin:18px auto 0;image-rendering:pixelated;width:192px;height:96px}
+  h2{font-weight:normal;font-size:20px;color:var(--gold);margin:34px 0 14px;display:flex;align-items:center;gap:10px}
+  h2::after{content:"";flex:1;height:4px;background:repeating-linear-gradient(90deg,var(--soft) 0 8px,transparent 8px 12px)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .card{background:var(--panel);border:4px solid var(--text);box-shadow:0 0 0 4px var(--panel),8px 8px 0 4px #00000088;display:flex;flex-direction:column;transition:transform .12s steps(2)}
+  .card:hover{transform:translate(-3px,-3px)}
+  .cover{aspect-ratio:16/9;background:#000;border-bottom:4px solid var(--text);overflow:hidden;position:relative}
+  .cover img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block}
+  .cover .badge{position:absolute;top:8px;left:8px;background:var(--red);border:3px solid var(--text);padding:1px 8px;font-size:12px}
+  .cover.placeholder{display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--soft);background:repeating-linear-gradient(45deg,#1a1430 0 10px,#140f22 10px 20px)}
+  .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .title{font-size:19px;color:var(--gold)}
+  .desc{font-size:13px;line-height:1.6;color:#e6dcf0;flex:1}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;border:2px solid var(--soft);padding:0 6px;color:#cbbbe0}
+  .play{display:block;text-align:center;text-decoration:none;color:var(--text);background:var(--red);border:3px solid var(--text);padding:7px 10px;font-size:16px}
+  .play:hover{background:#e0503e}
+  .play.off{background:#2a1f3d;border-color:var(--soft);color:var(--muted);pointer-events:none}
+  .about{background:var(--panel);border:4px solid var(--line);padding:14px 16px;line-height:1.7;font-size:14px}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .links a{color:var(--text);text-decoration:none;border:3px solid var(--soft);padding:4px 12px;background:#22183a;font-size:14px}
+  .links a:hover{border-color:var(--gold);color:var(--gold)}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:36px;line-height:1.8}
+  .blink{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="wrap">
+  <header>
+    <div class="tag">WELCOME</div>
+    <h1>RiN凜 的遊戲小屋</h1>
+    <p class="sub">打開瀏覽器就能玩的小遊戲合集，電腦、手機都可以<span class="blink">▼</span></p>
+    <canvas class="house" id="house" width="64" height="32"></canvas>
+  </header>
+
+  <h2>遊戲列表</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="cover"><img src="hotpotfighting/cover.png" alt="末日之夜：火鍋夜驚魂 遊戲畫面"><span class="badge">NEW</span></div>
+      <div class="body">
+        <div class="title">末日之夜：火鍋夜驚魂</div>
+        <div class="desc">世界末日、殭屍敲門……但眼前的火鍋才剛滾！一邊顧好鍋裡的肉片、一邊派室友去守門，撐到天亮吧。全 11 關、3 種結局。</div>
+        <div class="chips"><span class="chip">像素風</span><span class="chip">料理 × 塔防</span><span class="chip">約 4 分鐘一關</span><span class="chip">有 BGM</span></div>
+        <a class="play" href="hotpotfighting/">開始遊玩 ▶</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cover placeholder">？</div>
+      <div class="body">
+        <div class="title">凜界異聞錄：尋找失蹤的羅賓</div>
+        <div class="desc">文字互動小品，跟著線索一起尋找失蹤的羅賓。建議用手機直式遊玩。</div>
+        <div class="chips"><span class="chip">文字冒險</span><span class="chip">手機直式</span></div>
+        <a class="play" href="https://rin93robin-ctrl.github.io/rin-game/rin-game/">前往遊玩 ▶</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cover placeholder">…</div>
+      <div class="body">
+        <div class="title">下一款製作中</div>
+        <div class="desc">新的遊戲正在偷偷煮……敬請期待！</div>
+        <div class="chips"><span class="chip">COMING SOON</span></div>
+        <a class="play off">敬請期待</a>
+      </div>
+    </div>
+  </div>
+
+  <h2>關於 RiN凜</h2>
+  <div class="about">
+    台灣 VTuber「RiN凜 CH.」。唱歌、畫圖、彈吉他，偶爾也做小遊戲。<br>
+    玩完遊戲歡迎來頻道打招呼，或是在 X 上用 <b style="color:var(--gold)">#火鍋夜驚魂</b> 分享你的分數！
+    <div class="links">
+      <a href="https://www.youtube.com/@rinrin_paint_93" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://x.com/rinrin_taiwan" target="_blank" rel="noopener">X（Twitter）</a>
+      <a href="https://www.instagram.com/_vtuber_rin_/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+
+  <footer>© RiN凜 CH.　遊戲進度只存在你自己的瀏覽器裡，不會蒐集任何個人資料。</footer>
+</div>
+<script>
+// pixel night sky
+const sky=document.getElementById('sky'),sc=sky.getContext('2d');
+let stars=[];
+function size(){sky.width=Math.ceil(innerWidth/4);sky.height=Math.ceil(innerHeight/4);stars=Array.from({length:Math.round(sky.width*sky.height/180)},()=>[Math.random()*sky.width|0,Math.random()*sky.height|0,Math.random()*6]);}
+size();addEventListener('resize',size);
+function drawSky(t){
+  const g=sc.createLinearGradient(0,0,0,sky.height);g.addColorStop(0,'#0d0a14');g.addColorStop(1,'#21163a');sc.fillStyle=g;sc.fillRect(0,0,sky.width,sky.height);
+  for(const[x,y,p]of stars){const on=Math.sin(t/700+p*3)>-0.6;if(on){sc.fillStyle=p>5?'#ffe066':'#cfd8ff';sc.fillRect(x,y,1,1);}}
+  const mx=sky.width-30,my=22;sc.fillStyle='#f5e6a8';for(let y=-6;y<=6;y++){const w=Math.round(Math.sqrt(36-y*y));sc.fillRect(mx-w,my+y,w*2,1);}
+  sc.fillStyle='#0d0a14';for(let y=-5;y<=5;y++){const w=Math.round(Math.sqrt(25-y*y));sc.fillRect(mx+3-w,my-2+y,w*2,1);}
+  requestAnimationFrame(drawSky);
+}
+requestAnimationFrame(drawSky);
+// little pixel house with a steaming hotpot window
+const h=document.getElementById('house'),hc=h.getContext('2d');
+function R(x,y,w,ht,c){hc.fillStyle=c;hc.fillRect(x,y,w,ht);}
+function house(t){
+  hc.clearRect(0,0,64,32);
+  R(18,10,28,20,'#140f1c');R(19,11,26,19,'#7a4e2c');R(19,11,26,2,'#8a5e38');
+  for(let i=0;i<9;i++)R(14+i*2+0,9-i,36-i*4,1,i%2?'#c0392b':'#a02a1f');
+  R(14,10,36,1,'#140f1c');
+  R(22,16,10,8,'#140f1c');R(23,17,8,6,'#ffcf6b');R(26,17,1,6,'#7a4e2c');R(23,19,8,1,'#7a4e2c');
+  R(35,18,7,12,'#140f1c');R(36,19,5,11,'#5e3a20');R(40,24,1,1,'#e0b84a');
+  R(40,2,4,7,'#140f1c');R(41,3,2,6,'#8a5e38');
+  for(let i=0;i<3;i++){const y=(t/120+i*4)%10;R(41+Math.round(Math.sin((t/300)+i)),1-y+2,1,1,`rgba(240,240,240,${(1-y/10)*0.8})`);}
+  R(0,30,64,2,'#3a2a4a');
+  requestAnimationFrame(house);
+}
+requestAnimationFrame(house);
+</script>
+</body>
+</html>
