@@ -3,7 +3,7 @@
 // Jingles: win / lose / sting（殭屍潮警報）
 const music=(()=>{
   const mtof=m=>440*Math.pow(2,(m-69)/12);
-  const CH={Am:[57,60,64],F:[53,57,60],G:[55,59,62],E:[52,56,59],C:[48,52,55],Dm:[50,53,57]};
+  const CH={Am:[57,60,64],F:[53,57,60],G:[55,59,62],E:[52,56,59],C:[48,52,55],Dm:[50,53,57],Bb:[46,50,53],Gm:[43,46,50],A:[45,49,52]};
   const _=-1,o=0; // _ = sustain, o = rest
   const TRACKS={
     title:{bpm:92,
@@ -13,6 +13,14 @@ const music=(()=>{
         69,_,72,74,76,_,74,72, 74,_,_,_,_,_,o,o,
         76,_,79,_,81,_,84,_,   81,79,76,_,74,_,76,_,
         74,72,69,_,72,_,74,_,  72,_,_,_,_,_,o,o],
+    },
+    menu:{bpm:112,
+      chords:['Dm','Dm','Bb','A','Dm','Gm','Bb','A'],
+      mel:[
+        69,_,_,_,74,_,72,69,   69,_,67,65,64,_,_,o,
+        74,_,77,_,76,74,72,_,  73,_,_,_,76,_,_,o,
+        81,_,79,77,76,_,74,_,  74,_,70,_,67,_,69,_,
+        77,76,74,_,72,_,74,_,  73,_,76,_,69,_,_,o],
     },
     battle:{bpm:132,
       chords:['Am','Am','F','G','Am','Am','F','E','F','G','Am','Am','F','G','E','Am'],
@@ -60,6 +68,17 @@ const music=(()=>{
       if(p===14)block(ac,dest,t,0.05,1800);
       if(p%4===2)noise(ac,dest,t,0.03,0.025,7000);
       if(p===0||p===8){ch.forEach((n,i)=>tone(ac,dest,t+i*0.03,'square',n+12,q*3,0.012,{r:0.15}));}
+      return;
+    }
+    if(name==='menu'){
+      if(p%2===0){const m=tr.mel[mi];if(m>0){const len=sustainLen(tr.mel,mi)*2*q;tone(ac,dest,t,'square',m,len*0.92,0.06,{vib:len>0.35,sus:0.55,r:0.08});tone(ac,dest,t+q*1.5,'square',m,len*0.4,0.015,{sus:0.3});}}
+      if(p===0||p===3||p===8||p===11)kick(ac,dest,t,p===0||p===8?0.5:0.3);
+      if(p===0||p===8)tone(ac,dest,t,'triangle',ch[0]+12,q*7,0.2,{sus:0.7,r:0.05});
+      if(p%4===2)block(ac,dest,t,0.035,2200);
+      if(p===0)tone(ac,dest,t,'sawtooth',ch[0],q*15,0.025,{a:0.3,sus:0.8,r:0.2});
+      if(p===0){[ch[1],ch[2]].forEach(n=>tone(ac,dest,t,'square',n+12,q*15,0.008,{a:0.4,sus:0.8,r:0.2}));}
+      if(p===14&&bar%2===1)noise(ac,dest,t,0.12,0.06,1200,'bandpass');
+      if((bar===3||bar===7)&&p>=12)tone(ac,dest,t,'square',ch[1]+24-(15-p),q*0.6,0.018,{sus:0.3});
       return;
     }
     // battle
