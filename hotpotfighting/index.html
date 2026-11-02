@@ -283,10 +283,10 @@ function getName(){try{return localStorage.getItem('hotpot_name')||'無名火鍋
 function setName(n){try{localStorage.setItem('hotpot_name',n);}catch(e){}}
 let lastEntry=null;
 // ===== 全球排行榜（Supabase）：填入專案網址與 anon public key 即可啟用 =====
-const SUPA={url:'',key:''};
+const SUPA={url:'https://qeoersnlkgrqkoztjjfx.supabase.co',key:'sb_publishable_Y4CH8IzWxBfQ71Zp_6ZenQ_RxoCJT4Q'};
 const SUPA_TABLE='hotpot_scores',GAME_VER='0.7',SCORE_CAP=20000;
 const gOn=()=>!!(SUPA.url&&SUPA.key);
-function gHeaders(){return{apikey:SUPA.key,Authorization:'Bearer '+SUPA.key,'Content-Type':'application/json'};}
+function gHeaders(){const h={apikey:SUPA.key,'Content-Type':'application/json'};if(!SUPA.key.startsWith('sb_'))h.Authorization='Bearer '+SUPA.key;return h;}
 async function gTop(lv){try{const r=await fetch(`${SUPA.url}/rest/v1/${SUPA_TABLE}?select=name,score,win,created_at&level=eq.${lv}&order=score.desc,created_at.asc&limit=10`,{headers:gHeaders()});return r.ok?await r.json():null;}catch(e){return null;}}
 async function gSubmit(lv,name,sc,win){try{const r=await fetch(`${SUPA.url}/rest/v1/${SUPA_TABLE}`,{method:'POST',headers:Object.assign(gHeaders(),{Prefer:'return=minimal'}),body:JSON.stringify({name:name.slice(0,12),level:lv,score:Math.min(SCORE_CAP,Math.max(0,sc|0)),win:!!win,ver:GAME_VER})});return r.ok;}catch(e){return false;}}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
