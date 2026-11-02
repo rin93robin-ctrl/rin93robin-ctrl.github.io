@@ -34,6 +34,11 @@
   .pop.talk{animation:talk 2.2s ease-out forwards;background:#fff;color:#2a1020!important;text-shadow:none;padding:2px 8px;border:3px solid #140f1c;font-size:clamp(9px,1.5vw,15px)}
   @keyframes up{0%{opacity:0;margin-top:6px}12%{opacity:1}100%{opacity:0;margin-top:-34px}}
   @keyframes talk{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}
+  #scoreFloat{position:absolute;top:1.5%;left:1.2%;z-index:2;pointer-events:none;background:#140f22d8;border:3px solid #f3e9d2;padding:1px 10px 2px;display:flex;align-items:baseline;gap:8px;text-shadow:2px 2px 0 #000}
+  #scoreFloat[hidden]{display:none}
+  #scoreFloat .lbl{font-size:clamp(8px,1.2vw,12px);color:#b6ff3b;letter-spacing:2px}
+  #scoreBig{font-weight:normal;font-size:clamp(14px,2.6vw,26px);color:#ffcf6b;display:inline-block}
+  #scoreBig.bump{animation:bump .35s steps(3)}@keyframes bump{0%{transform:scale(1.45);color:#fff}100%{transform:scale(1)}}
   #bossbar{position:absolute;top:2%;left:50%;transform:translateX(-50%);width:46%;display:none;text-align:center;font-size:clamp(9px,1.5vw,15px);color:#ff9a9a;text-shadow:2px 2px 0 #000;pointer-events:none}
   #bossbar .bb{height:10px;background:#000;border:3px solid #f3e9d2;margin-top:2px}
   #bossbar .bb i{display:block;height:100%;background:#e74c3c}
@@ -89,6 +94,10 @@
   #nameEntry .panel{width:min(440px,86%);text-align:center}
   #nameEntry input{font-family:inherit;font-size:clamp(14px,2.4vw,22px);background:#0d0a14;color:#f3e9d2;border:3px solid #6b5a8a;padding:6px 10px;width:80%;text-align:center;margin:10px 0}
   #nameEntry input:focus{outline:none;border-color:#ffcf6b}
+  #lvlLB{margin-top:8px;border-top:2px dashed #4a3c6c;padding-top:6px;font-size:clamp(9px,1.3vw,13px)}
+  #lvlLB .lbt{color:#ffcf6b}
+  #lvlLB ol{margin:3px 0;padding-left:1.8em;line-height:1.45;columns:2;column-gap:18px}
+  #lvlLB li.me{color:#ffe066}
   #menuBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   #menuBtns button{font-size:11px;padding:2px 8px;border-width:2px}
   #glb{margin:4px auto 10px;font-size:clamp(10px,1.4vw,14px);text-align:left;max-width:360px;border-top:2px dashed #4a3c6c;padding-top:6px}
@@ -99,7 +108,7 @@
 </head>
 <body>
 <div id="wrap">
-  <header><h1>《末日之夜：火鍋夜驚魂》 v0.7</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
+  <header><h1>《末日之夜：火鍋夜驚魂》 v0.8</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
   <div id="hud">
     <span><b id="lvName">—</b></span>
     <span>時間 <b id="time">18:00</b></span>
@@ -115,6 +124,7 @@
     <canvas id="c"></canvas>
     <div id="labels"></div>
     <div id="pops"></div>
+    <div id="scoreFloat" hidden><span class="lbl">SCORE</span><b id="scoreBig">0</b></div>
     <div id="bossbar"><span id="bossName"></span><div class="bb"><i id="bossHp"></i></div></div>
     <div id="start" class="ov"><div class="panel">
       <div class="t1">末日之夜</div><div class="t2">火鍋夜驚魂</div>
@@ -137,7 +147,7 @@
       <div id="endBtns"></div>
     </div></div>
   </div>
-  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>v0.7：加入開場劇情與玩家名字、全球排行榜。全 11 關（含獎勵關）、3 種結局；破關進度與本機紀錄存在這個瀏覽器裡。破關進度存在這個瀏覽器裡。</footer>
+  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>v0.8：關卡選單顯示排行榜前 10 名、遊玩中顯示分數、新的標題曲。全 11 關（含獎勵關）、3 種結局；破關進度與本機紀錄存在這個瀏覽器裡。破關進度存在這個瀏覽器裡。</footer>
 </div>
 <script src="music.js"></script>
 <script>
@@ -299,7 +309,7 @@ async function renderGLB(lv,entry){
     el.innerHTML=`<div>🌏 全球排行榜（${esc(LEVELS[lv-1].name)}）</div><ol>${rows.map((r,i)=>`<li class="${i===meIdx?'me':''}">${esc(r.name)}　${r.score} 分${r.win?' ☀':''}</li>`).join('')||'<li>還沒有人登錄，搶下第一名吧！</li>'}</ol>`+
       (submitted?'<div class="note">已登錄！</div>':entry&&entry.s>0?`<button class="btn" id="gSubmitBtn">以「${esc(entry.n)}」登錄這次的 ${entry.s} 分</button>`:'');
     const b=$('gSubmitBtn');if(b)b.onclick=async()=>{b.disabled=true;b.textContent='登錄中……';const ok=await gSubmit(lv,entry.n,entry.s,entry.w);
-      if(!ok){b.disabled=false;b.textContent='登錄失敗，再試一次';return;}entry.sent=true;const rows2=await gTop(lv);draw(rows2||rows,true);};
+      if(!ok){b.disabled=false;b.textContent='登錄失敗，再試一次';return;}entry.sent=true;delete lbCache[lv];const rows2=await gTop(lv);draw(rows2||rows,true);};
   };
   const rows=await gTop(lv);
   if(!rows){el.innerHTML='<span class="note">全球排行榜暫時連不上，稍後再試</span>';return;}
@@ -369,8 +379,8 @@ const sfx={
   yuck:()=>{tone('square',500,250,0.25,0.06);},
 };
 $('mute').onclick=e=>{muted=!muted;e.target.textContent='音效：'+(muted?'關':'開');};
-$('bgm').onclick=e=>{const on=music.toggle();if(on&&!music.current)music.play(state==='play'?'battle':'title',AC());e.target.textContent='音樂：'+(on?'開':'關');};
-document.addEventListener('pointerdown',()=>{if(state==='menu'&&!music.current&&music.enabled)music.play('title',AC());});
+$('bgm').onclick=e=>{const on=music.toggle();if(on&&!music.current)music.play(state==='play'?(level.bonus?'title':'battle'):'menu',AC());e.target.textContent='音樂：'+(on?'開':'關');};
+document.addEventListener('pointerdown',()=>{if(state==='menu'&&!music.current&&music.enabled)music.play('menu',AC());});
 
 // ---------- DOM helpers ----------
 const labelsEl=$('labels'),popsEl=$('pops');
@@ -980,6 +990,18 @@ function renderLevelList(){
     b.innerHTML=(locked?'🔒 ':'')+(L.bonus?'☀ ':L.ending?'✦ ':'')+L.name+(progress>=L.id?' <span class="star">★</span>':'');
     b.onclick=()=>{if(locked){return;}selLevel=L;renderLevelList();renderLevelInfo();};el.appendChild(b);});
 }
+const lbCache={};
+async function renderLevelLB(lv){
+  const el=$('lvlLB');if(!el)return;
+  const local=(lbLoad()[lv]||[]).slice(0,10).map(e=>({name:e.n,score:e.s,win:e.w}));
+  const draw=(rows,src)=>{if(selLevel.id!==lv||!$('lvlLB'))return;const me=getName();
+    $('lvlLB').innerHTML=`<div class="lbt">🏆 排行榜前 10 名（${src}）</div><ol>${rows.map(r=>`<li class="${r.name===me?'me':''}">${esc(r.name)}　${r.score} 分${r.win?' ☀':''}</li>`).join('')||'<li>還沒有紀錄，搶下第一名吧！</li>'}</ol>`;};
+  if(!gOn()){draw(local,'本機');return;}
+  const c=lbCache[lv];if(c&&Date.now()-c.t<60000){draw(c.rows,'全球');return;}
+  draw(local,'本機・全球讀取中……');
+  const rows=await gTop(lv);
+  if(rows){lbCache[lv]={t:Date.now(),rows};draw(rows,'全球');}else draw(local,'本機');
+}
 function renderLevelInfo(){
   const L=selLevel,el=$('levelInfo');level=L;
   if(L.brothChoice){}else{brothKey=L.broth||'mala';broth=BROTHS[brothKey];}
@@ -992,7 +1014,9 @@ function renderLevelInfo(){
   if(L.bonus){}
   else if(L.brothChoice)h+=`<div id="broths"><button data-b="mala"><b>麻辣鍋</b><span>煮得快 ×1.25｜香氣 ×1.45（困難）</span></button><button data-b="kombu"><b>昆布鍋</b><span>標準｜香氣 ×1.0（簡單）</span></button><button data-b="suan"><b>酸菜白肉鍋</b><span>×1.1｜香氣 ×1.2（普通）</span></button></div>`;
   else h+=`<button id="goBtn">開始這一夜（鍋底：${L.pot==='yy'?'鴛鴦鍋・麻辣／大骨':BROTHS[L.broth].name}）</button>`;
+  h+=`<div id="lvlLB"></div>`;
   el.innerHTML=h;
+  renderLevelLB(L.id);
   if(L.bonus)el.querySelectorAll('#broths button').forEach(b=>{b.addEventListener('click',()=>{chosenNb=b.dataset.n;startGame();});});
   else if(L.brothChoice)el.querySelectorAll('#broths button').forEach(b=>{const k=b.dataset.b;
     b.addEventListener('mouseenter',()=>{brothKey=k;broth=BROTHS[k];});b.addEventListener('focus',()=>{brothKey=k;broth=BROTHS[k];});
@@ -1018,7 +1042,7 @@ function showEnding(kind){
   mk('再挑戰最終章',()=>{selLevel=level;startGame();});
   const shareText=`我在《末日之夜：火鍋夜驚魂》看到了${E.title}！🍲🧟 #火鍋夜驚魂`;
   const a=document.createElement('a');a.className='btn';a.textContent='分享到 X';a.style.textDecoration='none';a.target='_blank';a.rel='noopener';a.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText);bt.appendChild(a);
-  mk('關卡選單',()=>{music.play('title',AC());state='menu';$('end').hidden=true;$('start').hidden=false;renderLevelList();renderLevelInfo();});
+  mk('關卡選單',()=>{music.play('menu',AC());state='menu';$('end').hidden=true;$('start').hidden=false;renderLevelList();renderLevelInfo();});
   $('end').hidden=false;$('end').style.alignItems='flex-end';
 }
 function drawEndingScene(t){
@@ -1058,7 +1082,7 @@ function endGame(win){
   const shareText=`我在《末日之夜：火鍋夜驚魂》${level.name}${win?'撐到天亮了':'被殭屍攻破了'}！分數 ${score} 分🍲🧟 #火鍋夜驚魂`;
   mk('複製成績',async()=>{try{await navigator.clipboard.writeText(shareText);pop(240,135,'已複製！','#6dff7a',true);}catch(e){pop(240,135,'無法複製，請手動選取文字','#ff9a9a');}});
   const a=document.createElement('a');a.className='btn';a.textContent='分享到 X';a.style.textDecoration='none';a.target='_blank';a.rel='noopener';a.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText);bt.appendChild(a);
-  mk('關卡選單',()=>{music.play('title',AC());state='menu';$('end').hidden=true;$('start').hidden=false;selLevel=win&&next?next:level;renderLevelList();renderLevelInfo();});
+  mk('關卡選單',()=>{music.play('menu',AC());state='menu';$('end').hidden=true;$('start').hidden=false;selLevel=win&&next?next:level;renderLevelList();renderLevelInfo();});
   $('end').hidden=false;
 }
 
@@ -1247,6 +1271,8 @@ function updateDOM(){
   $('doorbar').style.width=Math.max(0,doorHP)+'%';$('doorbar').style.background=doorHP<33?'#e74c3c':doorHP<66?'#f0b43c':'#3fbf5a';
   $('aromabar').style.width=Math.min(100,aroma()/3.4*100)+'%';
   $('score').textContent=score;
+  const sf=$('scoreFloat');sf.hidden=state!=='play';
+  if(state==='play'){const sb=$('scoreBig');if(+sb.textContent!==score){if(score>(+sb.textContent||0)){sb.classList.remove('bump');void sb.offsetWidth;sb.classList.add('bump');}sb.textContent=score;}}
   const cs='★'.repeat(combo)+'☆'.repeat(CFG.combo-combo);if($('combo').textContent!==cs)$('combo').textContent=cs;
   $('waste').textContent=mom?(mom.phase==='watch'?'媽媽盯場中':'媽媽來了'):wasteN+'/'+CFG.wasteMax;
   $('friendBox').hidden=!level.ending;if(level.ending)$('friend').textContent=friendship+'/'+level.friend;
@@ -1273,7 +1299,7 @@ function hasName(){try{return !!localStorage.getItem('hotpot_name');}catch(e){re
 function askName(then){const ne=$('nameEntry'),inp=$('nameInput');inp.value=hasName()?getName():'';ne.hidden=false;setTimeout(()=>inp.focus(),50);
   const ok=()=>{const n=(inp.value||'').trim().slice(0,12);if(!n){inp.focus();return;}setName(n);ne.hidden=true;$('renameBtn').textContent='改名字（'+n+'）';AC();if(then)then();};
   $('nameOk').onclick=ok;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();ok();}};}
-function playIntro(then){music.stop();Intro.start(()=>{music.play('title',AC());if(then)then();});}
+function playIntro(then){music.stop();music.play('menu',AC());Intro.start(()=>{if(!music.current)music.play('menu',AC());if(then)then();});}
 $('replayIntro').onclick=()=>playIntro();
 $('renameBtn').onclick=()=>askName();
 if(hasName())$('renameBtn').textContent='改名字（'+getName()+'）';
