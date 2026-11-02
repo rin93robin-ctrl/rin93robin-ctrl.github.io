@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>末日之夜：火鍋夜驚魂 — 關卡版 v0.6</title>
+<title>末日之夜：火鍋夜驚魂</title>
 <meta name="description" content="世界末日也不能放下眼前的火鍋！一邊顧火鍋、一邊守住大門的像素風網頁遊戲。">
 <meta property="og:title" content="末日之夜：火鍋夜驚魂">
 <meta property="og:description" content="世界末日也不能放下眼前的火鍋！一邊顧火鍋、一邊守住大門的像素風網頁遊戲。">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://rin93robin-ctrl.github.io/hotpotfighting/hotpot_cover_16x9.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
@@ -68,12 +70,36 @@
   #lb input{font-family:inherit;background:#0d0a14;color:#f3e9d2;border:2px solid #6b5a8a;padding:2px 6px;width:9em}
   .best{color:#ffe066;font-size:.9em;margin:2px 0}
   #endBtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  #intro{position:absolute;inset:0;z-index:5;background:#000;cursor:pointer}
+  #intro[hidden]{display:none}
+  #ic{width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+  #idlg{position:absolute;left:2%;right:2%;bottom:3%;height:29%;background:#140f22f0;border:4px solid #f3e9d2;box-shadow:0 0 0 4px #140f22;display:none;gap:2%;padding:1.2% 1.6%;box-sizing:border-box}
+  #iportrait{height:100%;aspect-ratio:1;image-rendering:pixelated;background:#2a1f3d;border:3px solid #6b5a8a;box-sizing:border-box}
+  #iname{position:absolute;top:-1.6em;left:1em;background:#c0392b;padding:1px 10px;border:3px solid #f3e9d2;font-size:clamp(11px,1.8vw,17px);display:none}
+  #itext{flex:1;font-size:clamp(12px,2.3vw,22px);line-height:1.55;white-space:pre-wrap}
+  #inext{position:absolute;right:1.2%;bottom:6%;font-size:clamp(10px,1.6vw,16px);animation:iblink .7s steps(2) infinite;display:none}
+  @keyframes iblink{50%{opacity:0}}
+  #ichoices{position:absolute;right:4%;bottom:36%;display:none;flex-direction:column;gap:8px}
+  #ichoices button{font-family:inherit;font-size:clamp(12px,2.2vw,20px);background:#140f22f0;color:#f3e9d2;border:4px solid #f3e9d2;padding:6px 18px;text-align:left;cursor:pointer}
+  #ichoices button:hover,#ichoices button:focus{background:#c0392b;outline:none}
+  #ichoices button::before{content:"▶ ";color:#ffcf6b}
+  #iskip{position:absolute;top:3%;right:2%;font-family:inherit;background:#140f22cc;color:#f3e9d2;border:3px solid #6b5a8a;padding:2px 10px;cursor:pointer;font-size:clamp(10px,1.4vw,14px)}
+  #nameEntry{position:absolute;inset:0;z-index:6;background:#0d0a14ee;display:flex;align-items:center;justify-content:center}
+  #nameEntry[hidden]{display:none}
+  #nameEntry .panel{width:min(440px,86%);text-align:center}
+  #nameEntry input{font-family:inherit;font-size:clamp(14px,2.4vw,22px);background:#0d0a14;color:#f3e9d2;border:3px solid #6b5a8a;padding:6px 10px;width:80%;text-align:center;margin:10px 0}
+  #nameEntry input:focus{outline:none;border-color:#ffcf6b}
+  #menuBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  #menuBtns button{font-size:11px;padding:2px 8px;border-width:2px}
+  #glb{margin:4px auto 10px;font-size:clamp(10px,1.4vw,14px);text-align:left;max-width:360px;border-top:2px dashed #4a3c6c;padding-top:6px}
+  #glb ol{margin:4px 0;padding-left:1.6em;line-height:1.5}#glb li.me{color:#ffe066}
+  #glb .note{color:#9a8fb0;font-size:.85em}
   footer{margin-top:10px;font-size:13px;color:#9a8fb0;line-height:1.6}
 </style>
 </head>
 <body>
 <div id="wrap">
-  <header><h1>《末日之夜：火鍋夜驚魂》關卡版 v0.6</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
+  <header><h1>《末日之夜：火鍋夜驚魂》 v0.7</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
   <div id="hud">
     <span><b id="lvName">—</b></span>
     <span>時間 <b id="time">18:00</b></span>
@@ -94,14 +120,24 @@
       <div class="t1">末日之夜</div><div class="t2">火鍋夜驚魂</div>
       <div id="levelList"></div>
       <div id="levelInfo"></div>
-      <button class="btn" id="unlockAll">（測試用）全部解鎖</button>
+      <div id="menuBtns"><button class="btn" id="replayIntro">重看開場劇情</button><button class="btn" id="renameBtn">改名字</button><button class="btn" id="unlockAll">（測試用）全部解鎖</button></div>
+    </div></div>
+    <div id="intro" hidden><canvas id="ic"></canvas>
+      <div id="idlg"><div id="iname"></div><canvas id="iportrait" width="24" height="24"></canvas><div id="itext"></div><div id="inext">▼</div></div>
+      <div id="ichoices"></div><button id="iskip">跳過 ▶▶</button></div>
+    <div id="nameEntry" hidden><div class="panel">
+      <div class="t1">末日之夜</div><div class="t2">火鍋夜驚魂</div>
+      <div style="font-size:clamp(12px,1.8vw,16px)">請輸入你的名字</div>
+      <input id="nameInput" maxlength="12" placeholder="最多 12 個字" autocomplete="off">
+      <div style="font-size:12px;color:#9a8fb0;margin-bottom:8px">名字會出現在劇情和排行榜上，之後也可以在選單裡修改</div>
+      <button class="btn" id="nameOk">決定</button>
     </div></div>
     <div id="end" class="ov" hidden><div class="panel">
-      <div id="endTitle"></div><div id="endStats"></div><div id="lb"></div>
+      <div id="endTitle"></div><div id="endStats"></div><div id="lb"></div><div id="glb"></div>
       <div id="endBtns"></div>
     </div></div>
   </div>
-  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>關卡版 v0.6：獎勵關（中午火鍋派對）、第六夜～最終章（三種結局）、冰涼飲品、新鄰居（劍俠／奇異鳥寶寶軍團／排球隊長），第三夜起可能來第二位鄰居。破關進度存在這個瀏覽器裡。</footer>
+  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>v0.7：加入開場劇情與玩家名字、全球排行榜。全 11 關（含獎勵關）、3 種結局；破關進度與本機紀錄存在這個瀏覽器裡。破關進度存在這個瀏覽器裡。</footer>
 </div>
 <script src="music.js"></script>
 <script>
@@ -193,7 +229,7 @@ const MOM_CH={hair:'#3a2238',hairL:'#6a4a68',shirt:'#e86a9a',shirtD:'#b84a74',st
 
 // ---------- levels ----------
 const LEVELS=[
-  {id:1,name:'第一夜・寒流來襲',sub:'選一種鍋底，撐到天亮（原本的 Demo）',brothChoice:true,dur:200,fastAt:0.6,fastMul:1.06,plates:[...BASE,null,null],waves:[[0.5,5],[0.82,7]],
+  {id:1,name:'第一夜・寒流來襲',sub:'選一種鍋底，撐到天亮',brothChoice:true,dur:200,fastAt:0.6,fastMul:1.06,plates:[...BASE,null,null],waves:[[0.5,5],[0.82,7]],
     story:[['tv','插播緊急快報——感染者會陷入極度飢餓，請緊閉門窗！'],['meat','……那，先吃完再說？']],
     tips:['點盤子下料，進度條變<u>綠色</u>就夾起來餵室友；空手點室友＝派去守門','冰箱、殭屍掉落都能拿到新食材；<i>連續 5 次完美</i>得神秘食材','芋頭可能變成<em>毒芋</em>；半夜鄰居阿伯會來敲門']},
   {id:2,name:'第二夜・媽媽在看',sub:'新登場：媽媽、香菜',broth:'suan',dur:210,mom:true,fastAt:0.75,fastMul:1.15,spawnMul:1.1,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.5,5],[0.82,7]],
@@ -246,6 +282,29 @@ function lbSave(d){try{localStorage.setItem('hotpot_lb',JSON.stringify(d));}catc
 function getName(){try{return localStorage.getItem('hotpot_name')||'無名火鍋客';}catch(e){return'無名火鍋客';}}
 function setName(n){try{localStorage.setItem('hotpot_name',n);}catch(e){}}
 let lastEntry=null;
+// ===== 全球排行榜（Supabase）：填入專案網址與 anon public key 即可啟用 =====
+const SUPA={url:'',key:''};
+const SUPA_TABLE='hotpot_scores',GAME_VER='0.7',SCORE_CAP=20000;
+const gOn=()=>!!(SUPA.url&&SUPA.key);
+function gHeaders(){return{apikey:SUPA.key,Authorization:'Bearer '+SUPA.key,'Content-Type':'application/json'};}
+async function gTop(lv){try{const r=await fetch(`${SUPA.url}/rest/v1/${SUPA_TABLE}?select=name,score,win,created_at&level=eq.${lv}&order=score.desc,created_at.asc&limit=10`,{headers:gHeaders()});return r.ok?await r.json():null;}catch(e){return null;}}
+async function gSubmit(lv,name,sc,win){try{const r=await fetch(`${SUPA.url}/rest/v1/${SUPA_TABLE}`,{method:'POST',headers:Object.assign(gHeaders(),{Prefer:'return=minimal'}),body:JSON.stringify({name:name.slice(0,12),level:lv,score:Math.min(SCORE_CAP,Math.max(0,sc|0)),win:!!win,ver:GAME_VER})});return r.ok;}catch(e){return false;}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function renderGLB(lv,entry){
+  const el=$('glb');
+  if(!gOn()){el.innerHTML='<span class="note">全球排行榜準備中</span>';return;}
+  el.innerHTML='<div>🌏 全球排行榜（讀取中……）</div>';
+  const draw=(rows,submitted)=>{
+    const meIdx=submitted?rows.findIndex(r=>r.name===entry.n&&r.score===entry.s):-1;
+    el.innerHTML=`<div>🌏 全球排行榜（${esc(LEVELS[lv-1].name)}）</div><ol>${rows.map((r,i)=>`<li class="${i===meIdx?'me':''}">${esc(r.name)}　${r.score} 分${r.win?' ☀':''}</li>`).join('')||'<li>還沒有人登錄，搶下第一名吧！</li>'}</ol>`+
+      (submitted?'<div class="note">已登錄！</div>':entry&&entry.s>0?`<button class="btn" id="gSubmitBtn">以「${esc(entry.n)}」登錄這次的 ${entry.s} 分</button>`:'');
+    const b=$('gSubmitBtn');if(b)b.onclick=async()=>{b.disabled=true;b.textContent='登錄中……';const ok=await gSubmit(lv,entry.n,entry.s,entry.w);
+      if(!ok){b.disabled=false;b.textContent='登錄失敗，再試一次';return;}entry.sent=true;const rows2=await gTop(lv);draw(rows2||rows,true);};
+  };
+  const rows=await gTop(lv);
+  if(!rows){el.innerHTML='<span class="note">全球排行榜暫時連不上，稍後再試</span>';return;}
+  draw(rows,entry&&entry.sent);
+}
 function loadBonus(){try{return +localStorage.getItem('hotpot_bonus')||0;}catch(e){return 0;}}
 function saveBonus(n){if(n>loadBonus()){try{localStorage.setItem('hotpot_bonus',String(n));}catch(e){}}}
 function loadEndings(){try{return JSON.parse(localStorage.getItem('hotpot_endings')||'[]');}catch(e){return[];}}
@@ -258,7 +317,7 @@ function renderLB(lv){
   el.innerHTML=`<div>本機排行榜（${LEVELS[lv-1].name}）${rank>=0?`｜你的成績排第 <b>${rank+1}</b> 名`:'｜這次沒擠進前 10 名'}</div>`+
     `<div>名字：<input id="lbName" maxlength="12" value="${getName().replace(/"/g,'&quot;')}"></div>`+
     `<ol>${a.map(e=>`<li class="${lastEntry&&e.id===lastEntry.id?'me':''}">${e.n.replace(/</g,'&lt;')}　${e.s} 分${e.w?' ☀':''}</li>`).join('')||'<li>還沒有紀錄</li>'}</ol>`;
-  $('lbName').onchange=e=>{const n=(e.target.value||'').trim().slice(0,12)||'無名火鍋客';setName(n);if(lastEntry){lbRename(lv,lastEntry.id,n);}renderLB(lv);};
+  $('lbName').onchange=e=>{const n=(e.target.value||'').trim().slice(0,12)||'無名火鍋客';setName(n);if(lastEntry){lbRename(lv,lastEntry.id,n);lastEntry.n=n;}renderLB(lv);if(!(lastEntry&&lastEntry.sent))renderGLB(lv,lastEntry);};
 }
 function saveProgress(n){if(n>progress){progress=n;try{localStorage.setItem('hotpot_progress',String(n));}catch(e){}}}
 
@@ -954,7 +1013,7 @@ function showEnding(kind){
   music.stop();if(kind==='be')music.jingle('lose',AC());else{music.jingle('win',AC());setTimeout(()=>{if(state==='ending')music.play('title',AC());},2600);}
   const E=ENDINGS[kind];$('endTitle').textContent=E.title;
   $('endStats').innerHTML=E.text.split('\n').join('<br>')+`<br><br><span style="color:#ffe066">結局收集 ${loadEndings().length}/3</span>`+(kind==='he1'?'<br><span style="color:#9a8fb0">提示：天亮時「殭屍好感」達到 12，會看到另一個結局</span>':'');
-  $('lb').innerHTML='';
+  $('lb').innerHTML='';renderGLB(level.id,lastEntry);
   const bt=$('endBtns');bt.innerHTML='';const mk=(txt,fn)=>{const b=document.createElement('button');b.className='btn';b.textContent=txt;b.onclick=fn;bt.appendChild(b);};
   mk('再挑戰最終章',()=>{selLevel=level;startGame();});
   const shareText=`我在《末日之夜：火鍋夜驚魂》看到了${E.title}！🍲🧟 #火鍋夜驚魂`;
@@ -991,7 +1050,7 @@ function endGame(win){
   if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
   if(level.boss)lines.push(stats.boss?`打倒 BOSS：${level.boss.name}！`:`BOSS ${level.boss.name}：${bossDone?'被陽光逼退了':'沒有打倒'}`);
   $('endStats').innerHTML=lines.join('<br>');
-  renderLB(level.id);
+  renderLB(level.id);renderGLB(level.id,lastEntry);
   const bt=$('endBtns');bt.innerHTML='';
   const mk=(txt,fn)=>{const b=document.createElement('button');b.className='btn';b.textContent=txt;b.onclick=fn;bt.appendChild(b);};
   if(win&&next)mk((next.bonus?'前往：':next.ending?'最終章：':'下一夜：')+next.name,()=>{selLevel=next;startGame();});
@@ -1206,6 +1265,19 @@ reset();renderLevelList();renderLevelInfo();
 let last=performance.now();
 function loop(t){const dt=Math.min(0.05,(t-last)/1000);last=t;update(dt,t);render(t);updateDOM();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
+</script>
+<script src="intro.js"></script>
+<script>
+// ===== 名字輸入＋開場劇情 =====
+function hasName(){try{return !!localStorage.getItem('hotpot_name');}catch(e){return false;}}
+function askName(then){const ne=$('nameEntry'),inp=$('nameInput');inp.value=hasName()?getName():'';ne.hidden=false;setTimeout(()=>inp.focus(),50);
+  const ok=()=>{const n=(inp.value||'').trim().slice(0,12);if(!n){inp.focus();return;}setName(n);ne.hidden=true;$('renameBtn').textContent='改名字（'+n+'）';AC();if(then)then();};
+  $('nameOk').onclick=ok;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();ok();}};}
+function playIntro(then){music.stop();Intro.start(()=>{music.play('title',AC());if(then)then();});}
+$('replayIntro').onclick=()=>playIntro();
+$('renameBtn').onclick=()=>askName();
+if(hasName())$('renameBtn').textContent='改名字（'+getName()+'）';
+else askName(()=>playIntro());
 </script>
 </body>
 </html>
