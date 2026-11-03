@@ -108,7 +108,7 @@
 </head>
 <body>
 <div id="wrap">
-  <header><h1>《末日之夜：火鍋夜驚魂》 v0.8</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
+  <header><h1>《末日之夜：火鍋夜驚魂》 v0.9</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
   <div id="hud">
     <span><b id="lvName">—</b></span>
     <span>時間 <b id="time">18:00</b></span>
@@ -147,7 +147,7 @@
       <div id="endBtns"></div>
     </div></div>
   </div>
-  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>v0.8：關卡選單顯示排行榜前 10 名、遊玩中顯示分數、新的標題曲。全 11 關（含獎勵關）、3 種結局；破關進度與本機紀錄存在這個瀏覽器裡。破關進度存在這個瀏覽器裡。</footer>
+  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>v0.9：奇異鳥寶寶軍團進門會播〈KIWI之歌 2.0〉；同一夜媽媽出動 3 次，爸爸會邊吃雞排邊出來幫腔。全 11 關（含獎勵關）、3 種結局；破關進度與本機紀錄存在這個瀏覽器裡。破關進度存在這個瀏覽器裡。</footer>
 </div>
 <script src="music.js"></script>
 <script>
@@ -156,7 +156,7 @@ let DUR=200;
 // ===== balance config =====
 const CFG={combo:5,angelKills:8,poison:0.25,mutCil:0.3,mutFen:0.3,drainTable:1.0,drainGuard:2.4,guardBase:11,guardSat:0.12,
   zHp:30,zHpGrow:30,riderHp:20,doorDmg:0.9,riderDmg:1.4,guardRange:440,spawnBase:7.5,spawnMin:1.9,spawnEarly:0.55,spawnGrow:1.1,
-  repair:0.8,firstSpawn:6,burnT:4,wasteMax:3,momScold:5,momWatch:25,pickyArmor:0.6,bossDmg:2.4};
+  repair:0.8,firstSpawn:6,burnT:4,wasteMax:3,dadAt:3,momScold:5,momWatch:25,pickyArmor:0.6,bossDmg:2.4};
 const cv=document.getElementById('c');cv.width=W;cv.height=H;
 const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
 const $=id=>document.getElementById(id);
@@ -235,6 +235,7 @@ function applyNeighbor(key){const c=CHARS[3];['name','kind','hair','hairL','shir
 function rollNeighbor(ex){if(level.id===1)return'bo';if(level.nbFixed&&!ex)return level.nbFixed;const W=(level.id>=7?NB_WEIGHTS_LATE:NB_WEIGHTS).filter(([k])=>k!==ex);const tot=W.reduce((a,[,w])=>a+w,0);let r=Math.random()*tot;for(const[k,w]of W){if((r-=w)<0)return k;}return W[0][0];}
 function neighborLeft(){const prog=gameT/DUR;if(level.id>=3&&!level.bonus&&knock.count<2&&prog<0.75&&Math.random()<0.6){const prev=CHARS[3].nb;knock.nextAt=gameT+15;knock.state='none';knock.pending=rollNeighbor(prev);}}
 const ANGEL_CH={hair:'#ffe08a',hairL:'#fff6c8',shirt:'#ffffff',shirtD:'#dfe6f2',style:'cap',off:0};
+const DAD_CH={hair:'#2a2a2a',hairL:'#8a8a90',shirt:'#f0ede4',shirtD:'#cfcabb',style:'dad',off:1.1,glasses:true};
 const MOM_CH={hair:'#3a2238',hairL:'#6a4a68',shirt:'#e86a9a',shirtD:'#b84a74',style:'perm',off:0,floral:true};
 
 // ---------- levels ----------
@@ -379,7 +380,10 @@ const sfx={
   yuck:()=>{tone('square',500,250,0.25,0.06);},
 };
 $('mute').onclick=e=>{muted=!muted;e.target.textContent='音效：'+(muted?'關':'開');};
-$('bgm').onclick=e=>{const on=music.toggle();if(on&&!music.current)music.play(state==='play'?(level.bonus?'title':'battle'):'menu',AC());e.target.textContent='音樂：'+(on?'開':'關');};
+const kiwiBGM=new Audio('kiwi.mp3');kiwiBGM.loop=true;kiwiBGM.preload='none';let kiwiOn=false;
+function startKiwiBGM(){kiwiOn=true;music.stop();if(!music.enabled)return;try{kiwiBGM.currentTime=0;}catch(e){}kiwiBGM.play().catch(()=>{});}
+function stopKiwiBGM(){kiwiOn=false;kiwiBGM.pause();}
+$('bgm').onclick=e=>{if(kiwiOn){const on=music.toggle();music.stop();if(on)kiwiBGM.play().catch(()=>{});else kiwiBGM.pause();e.target.textContent='音樂：'+(on?'開':'關');return;}const on=music.toggle();if(on&&!music.current)music.play(state==='play'?(level.bonus?'title':'battle'):'menu',AC());e.target.textContent='音樂：'+(on?'開':'關');};
 document.addEventListener('pointerdown',()=>{if(state==='menu'&&!music.current&&music.enabled)music.play('menu',AC());});
 
 // ---------- DOM helpers ----------
@@ -446,15 +450,19 @@ function addWaste(x,y,why){
   wasteN++;pop(x,y,(why?why+' ':'')+`浪費 ${wasteN}/${CFG.wasteMax}`,'#ff9a9a');
   if(wasteN>=CFG.wasteMax)summonMom();
 }
-function summonMom(){mom={phase:'enter',x:-24,y:174,t:0,line:0};wasteN=0;stats.mom++;pop(160,120,'……玄關傳來腳步聲','#ffb0d0',true);}
+const DAD_LINES=['（喀滋喀滋）……你媽說得對啦。','我年輕的時候，一顆貢丸都捨不得掉在地上。','好啦好啦，聽你媽的就對了。','（咬雞排）……嗯，這雞排真好吃。','不要再讓你媽生氣了啦……（喀滋）'];
+function summonMom(){stats.mom++;mom={phase:'enter',x:-24,y:174,t:0,line:0,dad:stats.mom>=CFG.dadAt,dl:0};wasteN=0;
+  pop(160,120,mom.dad?'……玄關傳來兩個人的腳步聲，還有炸雞排的香味？！':'……玄關傳來腳步聲','#ffb0d0',true);if(mom.dad)stats.dad=true;}
 function updateMom(dt){
   if(!mom)return;mom.t-=dt;
   if(mom.phase==='enter'){mom.x+=70*dt;if(mom.x>=36){mom.x=36;mom.phase='scold';mom.t=CFG.momScold;mom.lt=0;sfx.scold();
       active().forEach(c=>{if(!c.guard){c.mood='shock';c.moodT=CFG.momScold;}});pop(190,110,'媽媽：你們在浪費什麼！！','#ff6aa8',true);}}
-  else if(mom.phase==='scold'){mom.lt-=dt;if(mom.lt<=0){talk(mom.x+24,mom.y-26,MOM_LINES[mom.line++%MOM_LINES.length]);mom.lt=1.7;}
-    if(mom.t<=0){mom.phase='watch';mom.t=CFG.momWatch;talk(mom.x+24,mom.y-26,'接下來我會在這裡盯著。');}}
+  else if(mom.phase==='scold'){mom.lt-=dt;if(mom.lt<=0){talk(mom.x+24,mom.y-26,MOM_LINES[mom.line++%MOM_LINES.length]);mom.lt=mom.dad?2.2:1.7;
+      if(mom.dad)setTimeout(()=>{if(mom&&mom.dad)talk(mom.x+62,mom.y-56,DAD_LINES[mom.dl++%DAD_LINES.length]);},1000);}
+    if(mom.t<=0){mom.phase='watch';mom.t=CFG.momWatch;mom.ct=4;talk(mom.x+24,mom.y-26,mom.dad?'接下來我們兩個會在這裡盯著。':'接下來我會在這裡盯著。');}}
+  if(mom&&mom.dad&&mom.phase==='watch'){mom.ct-=dt;if(mom.ct<=0){mom.ct=6+Math.random()*4;talk(mom.x+62,mom.y-56,pick(['（喀滋）','（喀滋喀滋）','……要不要分一口雞排？不行喔？','（吸手指）']));}}
   else if(mom.phase==='watch'){if(mom.t<=0){mom.phase='leave';tray.momegg+=2;sfx.chime();burst(TRAY_POS.momegg[0],TRAY_POS.momegg[1],24,'#ffd38a',30);
-      talk(mom.x+24,mom.y-26,'這樣才對嘛～滷蛋拿去吃！');pop(200,120,'獲得：媽媽滷蛋 ×2','#ffd38a',true);}}
+      talk(mom.x+24,mom.y-26,'這樣才對嘛～滷蛋拿去吃！');if(mom.dad)setTimeout(()=>{if(mom)talk(mom.x+62,mom.y-56,'雞排……我自己吃完了。');},900);pop(200,120,'獲得：媽媽滷蛋 ×2','#ffd38a',true);}}
   else if(mom.phase==='leave'){mom.x-=60*dt;if(mom.x<-30)mom=null;}
 }
 
@@ -486,6 +494,8 @@ function drawChar(c,cx,y,ch,mood,t){
   if(ch.style==='beret'){R(c,cx-12,y-3,20,5,K);R(c,cx-11,y-2,18,3,'#6a4c9c');R(c,cx-9,y-2,6,1,'#8f70c4');R(c,cx-1,y-5,2,2,K);}
   if(ch.sash){R(c,cx-11,y+22,22,3,'#3a6a5a');R(c,cx-11,y+23,22,1,'#5a9a8a');}
   if(ch.jersey){R(c,cx-2,y+21,4,1,'#fff');R(c,cx+1,y+22,1,4,'#fff');R(c,cx-11,y+17,3,4,'#fff');R(c,cx+8,y+17,3,4,'#fff');}
+  if(ch.style==='dad'){R(c,cx-9,y+1,18,4,ch.hair);R(c,cx-7,y+2,3,1,ch.hairL);R(c,cx+3,y+1,2,1,ch.hairL);}
+  if(ch.glasses){R(c,cx-7,y+8,5,4,K);R(c,cx+2,y+8,5,4,K);R(c,cx-6,y+9,3,2,'#bfe6ff');R(c,cx+3,y+9,3,2,'#bfe6ff');R(c,cx-2,y+9,4,1,K);}
   if(ch.style==='topknot'){R(c,cx-3,y-6,6,6,K);R(c,cx-2,y-5,4,4,ch.hair);R(c,cx-4,y-2,8,2,K);R(c,cx-3,y-2,6,1,'#c0392b');R(c,cx+4,y-2,4,1,'#c0392b');R(c,cx+6,y-1,1,4,'#c0392b');}
   if(ch.style==='sport'){R(c,cx-10,y+2,20,3,K);R(c,cx-9,y+3,18,1,'#ffe066');}
   if(ch.style==='band'){R(c,cx-10,y+2,20,4,K);R(c,cx-9,y+3,18,2,'#f3efe6');R(c,cx-3,y+3,6,1,'#c0392b');R(c,cx+8,y+3,4,5,K);R(c,cx+9,y+4,2,3,'#f3efe6');}
@@ -770,8 +780,18 @@ function drawAngel(t){
   if(a.phase==='wait'){R(g,x-12,y+38,24,3,K);R(g,x-11,y+39,Math.round(22*a.t/8),1,'#ffe066');}
   if(Math.random()<0.4)parts.push({x:x+Math.random()*40-20,y:y+Math.random()*40,vx:0,vy:8,l:0.7,col:Math.random()<0.5?'#fff':'#ffe066',sz:1});
 }
+function drawDad(x,y,t){
+  drawChar(g,x,y,DAD_CH,'normal',t);
+  // chicken cutlet in paper bag + chewing
+  const chew=((t/220)|0)%2,hy=y+18+(chew?0:-2);
+  R(g,x+9,hy,10,12,K);R(g,x+10,hy+1,8,10,'#f3e9d2');R(g,x+10,hy+6,8,1,'#c8b890');
+  R(g,x+8,hy-7,12,9,K);R(g,x+9,hy-6,10,7,'#c8862a');R(g,x+10,hy-5,3,1,'#e8b050');R(g,x+15,hy-3,2,1,'#e8b050');R(g,x+12,hy-2,1,1,'#8a5a1a');R(g,x+17,hy-5,2,2,K);
+  if(chew)R(g,x-1,y+13,3,1,'#7a2030');
+  if(Math.random()<0.08)parts.push({x:x+14,y:hy-8,vx:0,vy:-10,l:0.6,col:'rgba(255,240,220,.6)',sz:1});
+}
 function drawMom(t){
   const x=Math.round(mom.x),y=mom.y+(mom.phase==='enter'||mom.phase==='leave'?((t/120)|0)%2:0);
+  if(mom.dad)drawDad(x-12,y-26+(((t/140)|0)%2),t);
   const mood=mom.phase==='scold'?'angry':mom.phase==='leave'?'happy':'normal';
   drawChar(g,x,y,MOM_CH,mood,t);
   if(mom.phase==='scold'){const up=((t/180)|0)%2;R(g,x+12,y+(up?2:8),3,16,K);R(g,x+13,y+(up?3:9),1,14,'#6a4a2a');R(g,x+10,y+(up?-3:3),7,6,K);R(g,x+11,y+(up?-2:4),5,4,'#9aa0aa');}
@@ -936,6 +956,7 @@ function letNeighborIn(){
   if(c.nb==='bo')setTimeout(()=>{if(state==='play')giveIngredient(120,200,'阿伯帶來：',1);},600);
   if(c.kind==='cat')setTimeout(()=>{if(state==='play')pop(c.seat.x,c.seat.y-14,'餵飽牠，可能會有好事發生？','#ffe066');},1200);
   if(c.kind==='couple')setTimeout(()=>{if(state==='play')pop(c.seat.x+20,c.seat.y-14,'點他們＝派出去帶走 2 隻殭屍','#ffb0d0');},1400);
+  if(c.nb==='kiwi'){startKiwiBGM();pop(240,60,'♪ KIWI之歌 2.0 ♪','#c8a070',true);}
 }
 function catAttack(c){
   c.active=false;c.guard=false;stats.cat=true;flashT=0.45;slashT=0.9;sfx.boom();music.sting();
@@ -1024,14 +1045,14 @@ function renderLevelInfo(){
   else if($('goBtn'))$('goBtn').onclick=startGame;
 }
 $('unlockAll').onclick=()=>{allUnlocked=true;renderLevelList();};
-function startGame(){AC();level=selLevel;reset();$('bossbar').style.display='none';state='play';$('start').hidden=true;$('end').hidden=true;$('lvName').textContent=level.name;$('wasteBox').hidden=!level.mom;music.stop();music.play(level.bonus?'title':'battle',AC());}
+function startGame(){AC();stopKiwiBGM();level=selLevel;reset();$('bossbar').style.display='none';state='play';$('start').hidden=true;$('end').hidden=true;$('lvName').textContent=level.name;$('wasteBox').hidden=!level.mom;music.stop();music.play(level.bonus?'title':'battle',AC());}
 const ENDINGS={
   he1:{title:'結局一【吃到飽的早晨】HE',text:'天亮了。陽光灑進來的那一刻，門外的殭屍一個接一個化成了灰。電視播報：「感染已全面消退。」\n小紫妹妹、阿強哥哥、夢姊姊互看一眼——「那……再煮一鍋？」\n從今天起，再也沒有人跟他們搶火鍋了。'},
   he2:{title:'結局二【一起圍爐】HE',text:'天亮了。門外的殭屍沒有離開，而是安安靜靜地排起了隊……原來他們只是想要一碗熱湯。\n大家打開門，把桌子拉到走廊。那一天，人類和殭屍第一次一起圍爐。\n「……好……好吃……」'},
   be:{title:'結局三【最後一鍋】BE',text:'門破了。\n幾天後，公寓裡多了幾個搖搖晃晃的身影，圍著一口早已乾掉的鍋子。冰箱是空的，鍋子是冷的。\n「……好……餓……」'},
 };
 function showEnding(kind){
-  endingType=kind;state='ending';$('bossbar').style.display='none';saveEnding(kind);held=null;
+  stopKiwiBGM();endingType=kind;state='ending';$('bossbar').style.display='none';saveEnding(kind);held=null;
   zombies=[];pot=[];parts=[];proj=[];angel=null;mom=null;
   if(kind!=='be'){['meat','egg','ball','taro','cab','wagyu','crab','corn'].forEach((k,i)=>pot.push({type:k,slot:i,t:ING[k].cook+0.5,cook:ING[k].cook,mut:false,src:'pot'}));}
   music.stop();if(kind==='be')music.jingle('lose',AC());else{music.jingle('win',AC());setTimeout(()=>{if(state==='ending')music.play('title',AC());},2600);}
@@ -1061,6 +1082,7 @@ function drawEndingScene(t){
   }
 }
 function endGame(win){
+  stopKiwiBGM();
   $('end').style.alignItems='';
   if(level.ending){if(win)saveProgress(level.id);lastEntry={id:Date.now()+''+Math.random(),n:getName(),s:score,w:win?1:0};lbAdd(level.id,lastEntry);showEnding(!win?'be':friendship>=level.friend?'he2':'he1');return;}
   state='end';held=null;angel=null;music.jingle(win?'win':'lose',AC());$('bossbar').style.display='none';
@@ -1071,7 +1093,7 @@ function endGame(win){
   $('endTitle').textContent=level.bonus?`派對結束！${'★'.repeat(stars)||'（沒有星星）'}`:win?'天亮了！'+level.name+' 過關':'門被攻破了……（但大家都吃得很飽）';
   const lines=level.bonus?[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次（★25／★★40／★★★55）`,`一起吃火鍋的鄰居：${CHARS[3].name}`,`獎勵關最高紀錄：${'★'.repeat(loadBonus())||'無'} → 第六夜起開局加成`]:[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次｜最高連擊 ${stats.bestCombo}`,`擊退殭屍 ${stats.kills} 隻${stats.picky?`（嚇跑挑食殭屍 ${stats.picky} 隻）`:''}｜天使外送 ${stats.angel} 次`,`神秘食材 ${stats.mystery} 個｜變異食材攻擊 ${stats.mutHit} 次`];
   if(stats.nb&&!level.bonus)lines.push(`今晚的鄰居：${stats.nb}${stats.cat?'（吃飽後發動了夜之爪）':''}${stats.couple?'（帶走了 '+stats.couple+' 隻殭屍）':''}`);
-  if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
+  if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次${stats.dad?'（爸爸也出來了）':''}｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
   if(level.boss)lines.push(stats.boss?`打倒 BOSS：${level.boss.name}！`:`BOSS ${level.boss.name}：${bossDone?'被陽光逼退了':'沒有打倒'}`);
   $('endStats').innerHTML=lines.join('<br>');
   renderLB(level.id);renderGLB(level.id,lastEntry);
@@ -1284,7 +1306,7 @@ function updateDOM(){
   CHARS.forEach((c,i)=>{const d=charLbl[i];if(!c.active){d.textContent='';return;}const p=charPos(c);d.style.left=(p.x/W*100)+'%';d.style.top=((p.y-21)/H*100)+'%';
     const tag=c.kind==='cat'?'（餵飽度）':level.plates.includes('cil')?(c.cil?'🌿':'✖🌿'):'';
     const s=c.name+tag+(c.guard?'（守門）':c.stun>0?'（中毒）':c.debuff?(c.debuff.type==='taste'?'（味覺錯亂）':'（想睡）'):'');if(d.textContent!==s)d.textContent=s;});
-  if(mom){momLbl.style.left=(mom.x/W*100)+'%';momLbl.style.top=((mom.y-21)/H*100)+'%';if(momLbl.textContent!=='媽媽')momLbl.textContent='媽媽';}else if(momLbl.textContent)momLbl.textContent='';
+  if(mom){momLbl.style.left=(mom.x/W*100)+'%';momLbl.style.top=((mom.y-21)/H*100)+'%';const ml=mom.dad?'媽媽＆爸爸':'媽媽';if(momLbl.textContent!==ml)momLbl.textContent=ml;}else if(momLbl.textContent)momLbl.textContent='';
 }
 
 reset();renderLevelList();renderLevelInfo();
