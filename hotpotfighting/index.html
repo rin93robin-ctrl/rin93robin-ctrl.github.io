@@ -254,7 +254,7 @@ const NB_WEIGHTS=[['cat',30],['couple',30],['staff',30],['police',10]];
 const NB_WEIGHTS_LATE=[['cat',14],['couple',14],['staff',14],['police',6],['sword',18],['kiwi',17],['volley',17]];
 const NB_DESC={bo:'阿伯：守門 ×1.6，帶火鍋料來',cat:'黑貓：吃東西加倍可愛（吃飽會呼嚕加分）',couple:'對街情侶：會偷吃……但很甜',staff:'火鍋店員：定期加湯，煮更快、更營養',police:'帥警察：沒有特別能力，但很帥',sword:'劍俠',kiwi:'奇異鳥',volley:'排球隊長'};
 function applyNeighbor(key){const c=CHARS[3];['name','kind','hair','hairL','shirt','shirtD','style','likes','cil','power','hungry','hair2','shirt2','shirt2D','knockText','enterText','guardLine','apron','badge','sash','jersey','eatMul','defense','sequin','perm','pidan'].forEach(k=>delete c[k]);Object.assign(c,NB[key]);c.nb=key;}
-function rollNeighbor(ex){if(level.id===1)return'bo';if(level.nbFixed&&!ex)return level.nbFixed;const W=(level.id>=7?NB_WEIGHTS_LATE:NB_WEIGHTS).filter(([k])=>k!==ex);const tot=W.reduce((a,[,w])=>a+w,0);let r=Math.random()*tot;for(const[k,w]of W){if((r-=w)<0)return k;}return W[0][0];}
+function rollNeighbor(ex){if(level.id===1)return'bo';if(level.nbFixed&&!ex)return level.nbFixed;const W=(eOn()?NB_WEIGHTS_LATE.concat([['singer',12]]):level.id>=7?NB_WEIGHTS_LATE:NB_WEIGHTS).filter(([k])=>k!==ex);const tot=W.reduce((a,[,w])=>a+w,0);let r=Math.random()*tot;for(const[k,w]of W){if((r-=w)<0)return k;}return W[0][0];}
 function neighborLeft(){const prog=gameT/DUR;if(level.id>=3&&!level.bonus&&knock.count<2&&prog<0.75&&Math.random()<0.6){const prev=CHARS[3].nb;knock.nextAt=gameT+15;knock.state='none';knock.pending=rollNeighbor(prev);}}
 const ANGEL_CH={hair:'#ffe08a',hairL:'#fff6c8',shirt:'#ffffff',shirtD:'#dfe6f2',style:'cap',off:0};
 const DAD_CH={hair:'#2a2a2a',hairL:'#8a8a90',shirt:'#f0ede4',shirtD:'#cfcabb',style:'dad',off:1.1,glasses:true};
@@ -988,7 +988,7 @@ function scare(z){if(z.flee)return;z.flee=true;z.atDoor=false;stats.picky++;stat
 function spawnAngel(){angel={x:322,y:-50,phase:'down',t:8};killsSinceAngel=0;sfx.chime();pop(322,40,'天上有東西掉下來了……？！','#fff6c8',true);}
 function signAngel(){tray.wagyu+=2+(eOn()?E.b.angelVip:0);tray.crab+=1;stats.angel++;angel.phase='up';sfx.chime();pop(angel.x,angel.y-14,'天使外送到！A5和牛 ×2、帝王蟹 ×1','#fff6c8',true);}
 function letNeighborIn(){
-  const c=CHARS[3];knock.state='done';c.active=true;doorHP-=8;sfx.thud();sfx.chime();stats.nb=stats.nb?stats.nb+'、'+c.name:c.name;c.swordT=8;c.spikeT=4;
+  const c=CHARS[3];knock.state='done';c.active=true;doorHP-=eOn()?3:8;if(eOn())E.nbLeft=1;sfx.thud();sfx.chime();stats.nb=stats.nb?stats.nb+'、'+c.name:c.name;c.swordT=8;c.spikeT=4;
   c.sat=c.kind==='cat'?15:c.kind==='couple'?40:60;c.stealT=10;c.soupT=1.5;
   burst(390,145,20,'#ffe066',30);pop(300,120,c.enterText,'#ffe9b0',true);
   if(c.nb==='bo')setTimeout(()=>{if(state==='play')giveIngredient(120,200,'阿伯帶來：',1);},600);
@@ -1210,7 +1210,7 @@ function bossSteal(z){
 const ENDLESS={id:100,name:'無盡模式・永夜火鍋',sub:'天不會亮了。撐越多波，分數越高',endless:true,broth:'suan',dur:1e9,mom:true,drinks:true,fastAt:9,fastMul:1.2,
   plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[],
   story:[['tv','……天，再也沒有亮過。'],['sacha','火鍋不能熄，門也不能破。'],['meat','那就……吃到天荒地老吧！']],
-  tips:['一波 40 秒；<b>每過 3 波</b>抽一次<i>補給卡</i>（3 選 1，越後面卡越強），可以順便選擇<b>🌶 加辣</b>拼高分','<b>每 5 波一隻 BOSS</b>，BOSS 打完的下一波會比較輕鬆；BOSS 輪完一圈後，會出現<i>神秘的大仙</i>……','每一波可能遇到隨機的<b>今晚狀況</b>：颱風停電、台股大跌、香菜臭臭節、皮蛋地獄、外送塞車、貓頭鷹送幸福、奇異鳥給福利','<b>每日挑戰</b>：同一天所有人的鍋底、狀況、卡片順序都一樣，比純實力']};
+  tips:['一波 40 秒；<b>每過 3 波</b>抽一次<i>補給卡</i>（3 選 1，越後面卡越強），可以順便選擇<b>🌶 加辣</b>拼高分','<b>每 5 波一隻 BOSS</b>，BOSS 打完的下一波會比較輕鬆；BOSS 輪完一圈後，會出現<i>神秘的大仙</i>……','<b>鄰居每一波都會換人</b>：新的一波開始時，上一位鄰居會離開，波中再隨機來一位新鄰居敲門（夥伴卡可以讓指定的鄰居連續留 3 波）','每一波可能遇到隨機的<b>今晚狀況</b>：颱風停電、台股大跌、香菜臭臭節、皮蛋地獄、外送塞車、貓頭鷹送幸福、奇異鳥給福利','<b>每日挑戰</b>：同一天所有人的鍋底、狀況、卡片順序都一樣，比純實力']};
 let E_fcd=18,E=null,doorMax=100,rinSlashT=0;
 function seedFrom(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return h>>>0;}
 function todaySeed(){const d=new Date(Date.now()+8*3600e3);return d.toISOString().slice(0,10).replace(/-/g,'');}
@@ -1227,7 +1227,7 @@ const MODS={
   owl:{name:'貓頭鷹送幸福',desc:'這一波貓頭鷹會飛來送兩次禮物'},
   kiwi:{name:'奇異鳥給福利',desc:'奇異鳥寶寶送補給：全部食材 +3、全員體力 +15'},
 };
-const PARTNER=(key,tier,desc)=>({id:'p_'+key,tier,cat:'夥伴',name:'夥伴：'+NB[key].name,desc,max:1,ok:()=>CHARS[3].nb!==key||!CHARS[3].active,apply:()=>setPartner(key)});
+const PARTNER=(key,tier,desc)=>({id:'p_'+key,tier,cat:'夥伴',name:'夥伴：'+NB[key].name,desc:'立刻加入並連續留 3 波：'+desc,ok:()=>CHARS[3].nb!==key||!CHARS[3].active,apply:()=>setPartner(key)});
 const CARDS=[
   {id:'sacha',tier:1,cat:'鍋具',name:'祖傳沙茶醬',desc:'食材「剛好」的時間 +25%',apply:()=>{E.b.perfect*=1.25;}},
   {id:'fire',tier:1,cat:'鍋具',name:'大火快炒',desc:'所有食材煮得快 15%',apply:()=>{E.b.cook*=1.15;}},
@@ -1268,8 +1268,8 @@ function startEndless(daily){
 function setPartner(key){
   const c=CHARS[3],had=c.active?c.name:null;
   applyNeighbor(key);c.active=true;c.guard=false;c.spot=-1;c.sat=75;c.stun=0;c.debuff=null;c.swordT=8;c.soupT=2;c.spikeT=4;c.singT=3;c.perm=true;
-  knock.state='done';knock.count=2;stats.nb=c.name;
-  pop(c.seat.x+30,c.seat.y-14,had&&had!==c.name?`${had} 換成 ${c.name}！`:`${c.name}加入了！`,'#ffe9b0',true);
+  knock.state='done';knock.count=2;knock.pending=null;E.nbLeft=3;stats.nb=stats.nb?stats.nb+'、'+c.name:c.name;
+  pop(c.seat.x+30,c.seat.y-14,had&&had!==c.name?`${had} 換成 ${c.name}！（留 3 波）`:`${c.name}加入了！（留 3 波）`,'#ffe9b0',true);
   if(key==='kiwi')startKiwiBGM();else if(kiwiOn&&E.mod!=='kiwi'){stopKiwiBGM();music.play('battle',AC());}
 }
 function toYY(){
@@ -1296,6 +1296,10 @@ function spawnEBoss(w){
 function nextWave(){
   endModifier();
   E.wave++;E.t=0;E.phase='fight';const w=E.wave;
+  { const c=CHARS[3],prev=c.nb;
+    if(c.active){E.nbLeft=(E.nbLeft||1)-1;if(E.nbLeft<=0){c.active=false;c.guard=false;c.spot=-1;pop(c.seat.x+20,c.seat.y-10,`${c.name}揮揮手離開了～`,'#ffe9b0');
+        if(prev==='kiwi'&&kiwiOn){stopKiwiBGM();music.play('battle',AC());}}}
+    if(!c.active&&w>1){knock.state='none';knock.count=0;knock.nextAt=gameT+5+E.rng()*6;knock.pending=rollNeighbor(prev);} }
   E.bossWave=w%5===0;E.easy=!E.bossWave&&E.lastWasBoss;E.lastWasBoss=false;
   if(E.spicy>0)E.spicy--;
   let title=`第 ${w} 波`,sub='';
@@ -1457,7 +1461,7 @@ function update(dt,t){
     if(c.nb==='volley'&&c.guard){c.spikeT-=dt;if(c.spikeT<=0){c.spikeT=4;if(Math.random()<0.4)spike(c);}}
     if(c.nb==='staff'&&!c.guard&&c.stun<=0){c.soupT-=dt;if(c.soupT<=0){c.soupT=55;soupBuff=30;sfx.chime();burst(POT.x,POT.y,30,'#ffe066',30);pop(POT.x,POT.y-50,'店員：「幫您加湯～」30 秒內煮更快、更營養！','#ffe066',true);}}
   });
-  if(!knock.nextAt)knock.nextAt=eOn()?45:DUR*0.33;
+  if(!knock.nextAt)knock.nextAt=eOn()?12:DUR*0.33;
   if(!level.bonus&&knock.state==='none'&&knock.count<2&&gameT>=knock.nextAt&&!CHARS[3].active){if(knock.pending){applyNeighbor(knock.pending);knock.pending=null;}knock.count++;knock.state='active';knock.t=12;pop(300,108,(knock.count>1?'又有人來敲門了……':'')+CHARS[3].knockText,'#ffe066',true);[0,.35,.7].forEach(d=>setTimeout(sfx.thud,d*1000));}
   if(knock.state==='active'){knock.t-=dt;if(knock.t<=0){knock.state='done';pop(330,108,CHARS[3].name+'離開了……','#ff9a9a');neighborLeft();}}
   if(soupBuff>0)soupBuff-=dt;if(slashT>0)slashT-=dt;
