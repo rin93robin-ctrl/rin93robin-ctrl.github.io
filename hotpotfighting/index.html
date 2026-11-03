@@ -108,7 +108,7 @@
 </head>
 <body>
 <div id="wrap">
-  <header><h1>《末日之夜：火鍋夜驚魂》 v0.9</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
+  <header><h1>《末日之夜：火鍋夜驚魂》 v0.9.1</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
   <div id="hud">
     <span><b id="lvName">—</b></span>
     <span>時間 <b id="time">18:00</b></span>
@@ -194,13 +194,14 @@ const ING={
   mystery:{name:'神秘・黃金福丸',val:100},
   momegg:{name:'媽媽滷蛋',val:40},
   drink:{name:'冰涼飲品',val:25},
+  cutlet:{name:'爸爸的雞排',val:35},
 };
 const MUT_NAME={taro:'毒芋',cil:'變異香菜',fen:'變異茴香'};
 const BASE=['meat','cab','egg','ball','taro'];
 const TABLE={x:190,y:160,rx:96,ry:76};
 const POT={x:190,y:156,r:40};
 const PLATE_POS=[[124,182],[150,208],[190,219],[230,208],[256,182],[110,158],[270,158]];
-const TRAY_POS={mystery:[26,244],wagyu:[50,244],crab:[74,244],momegg:[98,244],drink:[122,244]};
+const TRAY_POS={mystery:[26,244],wagyu:[50,244],crab:[74,244],momegg:[98,244],drink:[122,244],cutlet:[146,244]};
 const FRIDGE={x:350,y:4,w:28,h:40};
 const SLOTS=[[0,0]];for(let i=0;i<8;i++)SLOTS.push([Math.round(Math.cos(i*Math.PI/4)*20),Math.round(Math.sin(i*Math.PI/4)*19)]);
 const SLOTS_YY=[[-20,-16],[-26,1],[-19,17],[-10,1],[20,-16],[26,1],[19,17],[10,1]];
@@ -245,7 +246,7 @@ const LEVELS=[
     tips:['點盤子下料，進度條變<u>綠色</u>就夾起來餵室友；空手點室友＝派去守門','冰箱、殭屍掉落都能拿到新食材；<i>連續 5 次完美</i>得神秘食材','芋頭可能變成<em>毒芋</em>；半夜鄰居阿伯會來敲門']},
   {id:2,name:'第二夜・媽媽在看',sub:'新登場：媽媽、香菜',broth:'suan',dur:210,mom:true,fastAt:0.75,fastMul:1.15,spawnMul:1.1,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.5,5],[0.82,7]],
     story:[['sacha','冰箱的菜不多了，今天要省著點吃。'],['taro','欸……媽媽剛打來，說她要過來我們這裡避難。'],['meat','完了，她最討厭別人浪費食物。']],
-    tips:['<b>浪費值</b>：丟食物沒打到東西、食材<b>煮老了才餵</b>或<b>煮到焦掉</b>、餵給<b>已經吃飽</b>或<b>不吃的人</b>都會 +1，累積到 3 <b>媽媽</b>就會出現','從這一夜開始，半夜來敲門的<b>鄰居每次都不一樣</b>：黑貓、對街情侶、火鍋店員，運氣好還會遇到<b>帥警察</b>','媽媽先罵 5 秒（全員罰站、鍋子關小火），再<b>盯場 25 秒</b>：這段時間再浪費會被沒收食材；忍住不浪費就會拿到<i>媽媽滷蛋</i>（補 40 體力、解除所有異常）','<u>香菜</u>：小紫妹妹、夢姊姊是香菜派；阿強哥哥、阿伯死都不吃','香菜煮熟時可能變成<u>變異香菜</u>：丟出去讓殭屍<b>嗆到</b>（變慢、攻擊減半）；被人吃到會<b>味覺錯亂</b>（10 秒內吃什麼都只剩 3 成飽足）']},
+    tips:['<b>浪費值</b>：丟食物沒打到東西、食材<b>煮老了才餵</b>或<b>煮到焦掉</b>、餵給<b>已經吃飽</b>或<b>不吃的人</b>都會 +1，累積到 3 <b>媽媽</b>就會出現','從這一夜開始，半夜來敲門的<b>鄰居每次都不一樣</b>：黑貓、對街情侶、火鍋店員，運氣好還會遇到<b>帥警察</b>','媽媽先罵 5 秒（全員罰站、鍋子關小火），再<b>盯場 25 秒</b>：這段時間再浪費會被沒收食材；忍住不浪費就會拿到<i>媽媽滷蛋</i>（補 40 體力、解除所有異常）','同一夜媽媽出動第 3 次時，<b>爸爸</b>會邊吃雞排邊出來；那次盯場撐過去，爸爸會偷塞<i>爸爸的雞排</i>（吃了補 35 體力；丟出去香味能把殭屍引開）','<u>香菜</u>：小紫妹妹、夢姊姊是香菜派；阿強哥哥、阿伯死都不吃','香菜煮熟時可能變成<u>變異香菜</u>：丟出去讓殭屍<b>嗆到</b>（變慢、攻擊減半）；被人吃到會<b>味覺錯亂</b>（10 秒內吃什麼都只剩 3 成飽足）']},
   {id:3,name:'第三夜・夜市大胃王',sub:'新登場：BOSS',broth:'mala',dur:210,mom:true,fastAt:0.70,fastMul:1.15,spawnMul:1.0,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.85,6]],
     boss:{name:'夜市大胃王',hp:1000,at:0.42},
     story:[['tv','快報：夜市方向出現巨大感染者，正循著香味移動……'],['meat','那不是去年大胃王比賽的冠軍嗎？！'],['sacha','……他是衝著我們的麻辣鍋來的。']],
@@ -337,7 +338,7 @@ function reset(){
   DUR=level.dur;potMode=level.pot==='yy'?'yy':'single';
   if(!level.brothChoice&&level.broth){brothKey=level.broth;broth=BROTHS[brothKey];}
   plates=level.plates.slice();stock={};const sm=level.id>=7?1.5:level.id>=4?1.3:1;plates.forEach(k=>{if(k)stock[k]=Math.round(ING[k].stock*sm);});
-  tray={mystery:0,wagyu:0,crab:0,momegg:0};combo=0;killsSinceAngel=0;angel=null;fridgeCD=6;fridgeOpen=0;knock={state:'none',t:0,count:0,nextAt:0,pending:null};
+  tray={mystery:0,wagyu:0,crab:0,momegg:0,drink:0,cutlet:0};TRAY_POS.cutlet[0]=level.drinks?146:122;try{trayLbl.cutlet.style.left=(TRAY_POS.cutlet[0]/W*100)+'%';}catch(e){}combo=0;killsSinceAngel=0;angel=null;fridgeCD=6;fridgeOpen=0;knock={state:'none',t:0,count:0,nextAt:0,pending:null};
   wasteN=0;mom=null;boss=null;bossDone=false;
   CHARS.forEach(c=>{c.active=c.base;c.sat=70;c.guard=false;c.spot=-1;c.stun=0;c.mood=null;c.moodT=0;c.debuff=null;});
   applyNeighbor(level.bonus?chosenNb:rollNeighbor());fastSaid=false;soupBuff=0;coupleOut=null;slashT=0;balls=[];friendship=0;endingType=null;
@@ -403,7 +404,7 @@ const slots=()=>potMode==='yy'?SLOTS_YY:SLOTS;
 const sideOf=i=>slots()[i][0]<0?'L':'R';
 function sachaActive(){const s=CHARS[2];return !s.guard&&s.stun<=0;}
 function winOf(o){return ING[o.type].win*(sachaActive()?1.4:1);}
-const SPECIAL=k=>k==='mystery'||k==='momegg'||k==='drink';
+const SPECIAL=k=>k==='mystery'||k==='momegg'||k==='drink'||k==='cutlet';
 function stOf(o){if(SPECIAL(o.type))return'special';if(o.mut)return'mut';if(o.t<o.cook)return'raw';if(o.t<o.cook+winOf(o))return'ok';return'over';}
 function ingColor(o){const d=ING[o.type],s=stOf(o);if(s==='raw')return lerpC(d.raw,d.ok,o.t/o.cook*0.7);if(s==='ok')return d.ok;if(s==='over')return lerpC(d.ok,d.over,(o.t-o.cook-winOf(o))/4);return null;}
 function speedOf(o){return (potMode==='yy'?YY[sideOf(o.slot)].speed:broth.speed)*(soupBuff>0?1.3:1);}
@@ -460,10 +461,10 @@ function updateMom(dt){
   else if(mom.phase==='scold'){mom.lt-=dt;if(mom.lt<=0){talk(mom.x+24,mom.y-26,MOM_LINES[mom.line++%MOM_LINES.length]);mom.lt=mom.dad?2.2:1.7;
       if(mom.dad)setTimeout(()=>{if(mom&&mom.dad)talk(mom.x+62,mom.y-56,DAD_LINES[mom.dl++%DAD_LINES.length]);},1000);}
     if(mom.t<=0){mom.phase='watch';mom.t=CFG.momWatch;mom.ct=4;talk(mom.x+24,mom.y-26,mom.dad?'接下來我們兩個會在這裡盯著。':'接下來我會在這裡盯著。');}}
-  if(mom&&mom.dad&&mom.phase==='watch'){mom.ct-=dt;if(mom.ct<=0){mom.ct=6+Math.random()*4;talk(mom.x+62,mom.y-56,pick(['（喀滋）','（喀滋喀滋）','……要不要分一口雞排？不行喔？','（吸手指）']));}}
   else if(mom.phase==='watch'){if(mom.t<=0){mom.phase='leave';tray.momegg+=2;sfx.chime();burst(TRAY_POS.momegg[0],TRAY_POS.momegg[1],24,'#ffd38a',30);
-      talk(mom.x+24,mom.y-26,'這樣才對嘛～滷蛋拿去吃！');if(mom.dad)setTimeout(()=>{if(mom)talk(mom.x+62,mom.y-56,'雞排……我自己吃完了。');},900);pop(200,120,'獲得：媽媽滷蛋 ×2','#ffd38a',true);}}
+      talk(mom.x+24,mom.y-26,'這樣才對嘛～滷蛋拿去吃！');if(mom.dad){tray.cutlet+=1;stats.cutlet=(stats.cutlet||0)+1;setTimeout(()=>{if(mom)talk(mom.x+62,mom.y-56,'（小聲）雞排分你一塊，別跟你媽說。');burst(TRAY_POS.cutlet[0],TRAY_POS.cutlet[1],24,'#e8b050',30);pop(200,138,'獲得：爸爸的雞排 ×1','#e8b050',true);},900);}pop(200,120,'獲得：媽媽滷蛋 ×2','#ffd38a',true);}}
   else if(mom.phase==='leave'){mom.x-=60*dt;if(mom.x<-30)mom=null;}
+  if(mom&&mom.dad&&mom.phase==='watch'){mom.ct=(mom.ct||4)-dt;if(mom.ct<=0){mom.ct=6+Math.random()*4;talk(mom.x+62,mom.y-56,pick(['（喀滋）','（喀滋喀滋）','……要不要分一口雞排？不行喔？','（吸手指）']));}}
 }
 
 // ---------- characters ----------
@@ -590,6 +591,7 @@ function drawIng(c,type,x,y,col,s,t){
     ell(c,x,y,7,7,'rgba(255,224,102,.3)');ell(c,x,y,5,5,K);ell(c,x,y,4,4,'#ffcf3b');R(c,x-2,y-3,2,2,'#fff8d0');R(c,x+1,y+1,2,2,'#d89a18');
     for(let i=0;i<2;i++){const a=t/260+i*Math.PI;R(c,x+Math.cos(a)*9,y+Math.sin(a)*5,1,1,'#ffffff');}
   }
+  else if(type==='cutlet'){R(c,x-5,y-2,11,8,K);R(c,x-4,y-1,9,6,'#f3e9d2');R(c,x-4,y+2,9,1,'#c8b890');R(c,x-6,y-7,13,8,K);R(c,x-5,y-6,11,6,'#c8862a');R(c,x-4,y-5,3,1,'#e8b050');R(c,x+1,y-4,2,1,'#e8b050');R(c,x-1,y-3,1,1,'#8a5a1a');R(c,x+3,y-6,1,1,'#e8b050');}
   else if(type==='drink'){R(c,x-4,y-6,9,12,K);R(c,x-3,y-5,7,10,'#d8f0ff');R(c,x-3,y-2,7,7,'#c8a070');R(c,x-2,y+2,1,1,'#2a1a10');R(c,x,y+3,1,1,'#2a1a10');R(c,x+2,y+2,1,1,'#2a1a10');R(c,x-2,y-4,2,2,'#fff');R(c,x+1,y-3,2,2,'#eef8ff');R(c,x+1,y-9,1,5,'#ff6aa8');R(c,x+2,y-9,2,1,'#ff6aa8');}
   else if(type==='momegg'){ell(c,x,y,5,4,K);ell(c,x,y,4,3,'#8a4a1a');R(c,x-2,y-2,2,1,'#c07a3a');R(c,x+1,y,2,2,'#5a2a0a');R(c,x+5,y-5,1,2,'#ff6aa8');R(c,x+4,y-4,3,1,'#ff6aa8');}
 }
@@ -643,12 +645,12 @@ function drawPlate(i,t,hover){
 }
 function drawBowl(x,y){ell(g,x,y+1,7,4,'rgba(0,0,0,.3)');ell(g,x,y,7,4,K);ell(g,x,y,6,3,'#f3efe6');ell(g,x,y,4,2,'#8a4a20');R(g,x,y-1,2,1,'#f2c94c');R(g,x+8,y-4,1,7,'#c9a26b');R(g,x+10,y-4,1,7,'#c9a26b');}
 function drawTray(t,hover){
-  const tw=level.drinks?136:112;R(g,8,222,tw,42,K);R(g,9,223,tw-2,40,'#6e4428');R(g,11,225,tw-6,36,'#a8744a');R(g,11,225,tw-6,1,'#c48a5a');
+  const tw=(level.drinks?136:112)+(level.mom?24:0);R(g,8,222,tw,42,K);R(g,9,223,tw-2,40,'#6e4428');R(g,11,225,tw-6,36,'#a8744a');R(g,11,225,tw-6,1,'#c48a5a');
   for(const k in TRAY_POS){
-    if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;
+    if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;if(k==='cutlet'&&!level.mom)continue;
     const[x,y]=TRAY_POS[k];
     ell(g,x,y+1,11,6,hover===k?'#ffe066':K);ell(g,x,y+1,10,5,tray[k]>0?'#f5ecd2':'#8a6440');
-    if(tray[k]>0){if(k==='mystery'&&((t/400)|0)%2)ell(g,x,y,13,8,'rgba(255,224,102,.18)');drawIng(g,k,x,y,ING[k].raw||'#fff',k==='mystery'||k==='momegg'||k==='drink'?'special':'raw',t);}
+    if(tray[k]>0){if(k==='mystery'&&((t/400)|0)%2)ell(g,x,y,13,8,'rgba(255,224,102,.18)');drawIng(g,k,x,y,ING[k].raw||'#fff',SPECIAL(k)?'special':'raw',t);}
   }
 }
 
@@ -801,7 +803,7 @@ function drawMom(t){
 // ---------- hit tests ----------
 function hitIng(x,y,t){for(const o of pot){const[p,q]=slotPos(o,t);if(Math.abs(x-p)<=6&&Math.abs(y-q)<=6)return o;}return null;}
 function hitPlate(x,y){for(let i=0;i<PLATE_POS.length;i++){const[p,q]=PLATE_POS[i];if(plates[i]&&Math.abs(x-p)<=12&&Math.abs(y-q)<=7)return i;}return -1;}
-function hitTray(x,y){for(const k in TRAY_POS){if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;const[p,q]=TRAY_POS[k];if(Math.abs(x-p)<=11&&Math.abs(y-q)<=9)return k;}return null;}
+function hitTray(x,y){for(const k in TRAY_POS){if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;if(k==='cutlet'&&!level.mom)continue;const[p,q]=TRAY_POS[k];if(Math.abs(x-p)<=11&&Math.abs(y-q)<=9)return k;}return null;}
 function hitChar(x,y){for(const c of active()){const p=charPos(c),w=c.kind==='couple'?27:15;if(x>=p.x-w&&x<=p.x+w&&y>=p.y-6&&y<=p.y+37)return c;}return null;}
 function hitFridge(x,y){return x>=FRIDGE.x-2&&x<=FRIDGE.x+FRIDGE.w+2&&y>=FRIDGE.y&&y<=FRIDGE.y+FRIDGE.h+2;}
 function hitAngel(x,y){return angel&&angel.phase==='wait'&&Math.abs(x-angel.x)<=18&&y>=angel.y+10&&y<=angel.y+40;}
@@ -877,6 +879,7 @@ function feed(c){
   if(c.guard){pop(p.x,p.y-12,'在守門中！','#9fd3ff');return;}
   if(scolding()){pop(p.x,p.y-12,'媽媽在罵，不敢吃……','#ffb0d0');return;}
   const o=held,s=stOf(o);
+  if(o.type==='cutlet'){held=null;if(c.sat>=95){pop(p.x,p.y-12,'吃不下了……','#d9b38c');addWaste(p.x,p.y+4,'');return;}c.sat=Math.min(100,c.sat+35);c.mood='happy';c.moodT=1.5;score+=10;pop(p.x,p.y-12,'爸爸的雞排……好香！ +35','#e8b050');sfx.eat();if(c.kind==='cat'&&c.sat>=100&&!level.bonus)catAttack(c);return;}
   if(o.type==='drink'){held=null;if(c.sat>=95){pop(p.x,p.y-12,'喝不下了……','#d9b38c');addWaste(p.x,p.y+4,'');return;}c.sat=Math.min(100,c.sat+25);c.mood='happy';c.moodT=1;score+=8;pop(p.x,p.y-12,'透心涼～ +25','#bfe6ff');sfx.good();if(c.kind==='cat'&&c.sat>=100&&!level.bonus)catAttack(c);return;}
   if(o.type==='momegg'){held=null;c.sat=Math.min(100,c.sat+40);if(c.kind==='cat'&&c.sat>=100&&!level.bonus){catAttack(c);return;}c.stun=0;c.debuff=null;c.mood='happy';c.moodT=1.5;stats.momegg++;score+=15;pop(p.x,p.y-12,'媽媽的味道……！ +40','#ffd38a',true);sfx.chime();return;}
   if(c.stun>0){pop(p.x,p.y-12,'暈著吃不了……','#c9a6ff');return;}
@@ -927,6 +930,7 @@ function land(pr){
   const near=r=>zombies.filter(z=>!z.dead&&!z.flee&&Math.hypot(z.x-pr.tx,z.y+12-pr.ty)<(z.type==='boss'?r+25:r));
   if(ty==='mystery'){flashT=0.5;sfx.boom();let n=0;zombies.forEach(z=>{if(!z.dead&&!z.flee){z.hp-=90;n++;burst(z.x,z.y+10,14,'#ffe066',34);}});pop(436,90,`黃金福丸・全體攻擊！×${n}`,'#ffe066',true);return;}
   if(ty==='momegg'){addWaste(pr.tx,pr.ty-10,'滷蛋丟出去了？！');return;}
+  if(ty==='cutlet'){burst(pr.tx,pr.ty,24,'#e8b050',30);sfx.splash();const zs=near(60);zs.forEach(z=>{if(z.type!=='picky')z.distract=Math.max(z.distract,z.type==='boss'?3:6);});const n=zs.filter(z=>z.type!=='picky').length;if(n){pop(pr.tx,pr.ty-16,`雞排的香味把殭屍引開了！×${n}`,'#e8b050');if(level.ending){friendship+=n;}}else addWaste(pr.tx,pr.ty-16,'雞排丟空了！');return;}
   if(ty==='drink'){burst(pr.tx,pr.ty,30,'#bfe6ff',34);sfx.splash();const zs=near(50);zs.forEach(z=>{z.slow=Math.max(z.slow,6);});if(zs.length)pop(pr.tx,pr.ty-16,`冰飲潑到了！緩速 ×${zs.length}`,'#bfe6ff');else addWaste(pr.tx,pr.ty-16,'冰飲潑空了！');return;}
   if(mut){
     stats.mutHit++;
@@ -1093,7 +1097,7 @@ function endGame(win){
   $('endTitle').textContent=level.bonus?`派對結束！${'★'.repeat(stars)||'（沒有星星）'}`:win?'天亮了！'+level.name+' 過關':'門被攻破了……（但大家都吃得很飽）';
   const lines=level.bonus?[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次（★25／★★40／★★★55）`,`一起吃火鍋的鄰居：${CHARS[3].name}`,`獎勵關最高紀錄：${'★'.repeat(loadBonus())||'無'} → 第六夜起開局加成`]:[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次｜最高連擊 ${stats.bestCombo}`,`擊退殭屍 ${stats.kills} 隻${stats.picky?`（嚇跑挑食殭屍 ${stats.picky} 隻）`:''}｜天使外送 ${stats.angel} 次`,`神秘食材 ${stats.mystery} 個｜變異食材攻擊 ${stats.mutHit} 次`];
   if(stats.nb&&!level.bonus)lines.push(`今晚的鄰居：${stats.nb}${stats.cat?'（吃飽後發動了夜之爪）':''}${stats.couple?'（帶走了 '+stats.couple+' 隻殭屍）':''}`);
-  if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次${stats.dad?'（爸爸也出來了）':''}｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
+  if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次${stats.dad?'（爸爸也出來了'+(stats.cutlet?'，拿到雞排 ×'+stats.cutlet:'')+'）':''}｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
   if(level.boss)lines.push(stats.boss?`打倒 BOSS：${level.boss.name}！`:`BOSS ${level.boss.name}：${bossDone?'被陽光逼退了':'沒有打倒'}`);
   $('endStats').innerHTML=lines.join('<br>');
   renderLB(level.id);renderGLB(level.id,lastEntry);
@@ -1301,7 +1305,7 @@ function updateDOM(){
   $('soupBox').hidden=!(soupBuff>0);if(soupBuff>0)$('soup').textContent=Math.ceil(soupBuff);
   if(boss)$('bossHp').style.width=Math.max(0,boss.hp/boss.max*100)+'%';
   PLATE_POS.forEach((_,i)=>{const k=plates[i];const s=k?(stock[k]>0?ING[k].name+' ×'+stock[k]:ING[k].name+'（空）'):'';if(plateLbl[i].textContent!==s)plateLbl[i].textContent=s;});
-  for(const k in TRAY_POS){const s=tray[k]>0?({mystery:'福丸',momegg:'滷蛋',drink:'冰飲'}[k]||ING[k].name)+'×'+tray[k]:'';if(trayLbl[k].textContent!==s)trayLbl[k].textContent=s;}
+  for(const k in TRAY_POS){const s=tray[k]>0?({mystery:'福丸',momegg:'滷蛋',drink:'冰飲',cutlet:'雞排'}[k]||ING[k].name)+'×'+tray[k]:'';if(trayLbl[k].textContent!==s)trayLbl[k].textContent=s;}
   const fs=state==='play'?(fridgeCD>0?'冰箱 '+Math.ceil(fridgeCD)+'s':'冰箱 可搜刮！'):'冰箱';if(fridgeLbl.textContent!==fs)fridgeLbl.textContent=fs;
   CHARS.forEach((c,i)=>{const d=charLbl[i];if(!c.active){d.textContent='';return;}const p=charPos(c);d.style.left=(p.x/W*100)+'%';d.style.top=((p.y-21)/H*100)+'%';
     const tag=c.kind==='cat'?'（餵飽度）':level.plates.includes('cil')?(c.cil?'🌿':'✖🌿'):'';
