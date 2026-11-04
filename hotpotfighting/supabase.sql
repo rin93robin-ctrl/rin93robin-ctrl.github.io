@@ -24,3 +24,7 @@ alter table public.hotpot_scores add constraint hotpot_scores_score_check check 
 alter table public.hotpot_scores add column if not exists seed text check (char_length(seed) <= 12);
 alter table public.hotpot_scores add column if not exists wave smallint check (wave between 0 and 999);
 create index if not exists hotpot_scores_level_seed_score on public.hotpot_scores (level, seed, score desc);
+
+-- v1.0.2：血月模式「最快天亮」排行榜（level 102）
+alter table public.hotpot_scores drop constraint if exists hotpot_scores_level_check;
+alter table public.hotpot_scores add constraint hotpot_scores_level_check check (level between 1 and 11 or level in (100,101,102));
